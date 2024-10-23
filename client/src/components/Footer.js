@@ -11,10 +11,11 @@ const Footer = () => {
         backgroundColor: 'background.paper',
         p: 2,
         boxShadow: '0 -1px 5px rgba(0,0,0,0.1)',
+        borderTop: '1px solid #ddd',
       }}
     >
       <Typography variant="body2" color="textSecondary" align="center">
-        © 2024 Your Company. All rights reserved.
+        © 2024 Mohit Yadav. All rights reserved.
       </Typography>
     </Box>
   );
