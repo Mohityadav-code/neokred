@@ -1,0 +1,26 @@
+/* client/src/App.css */
+
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+.CodeMirror {
+  height: 100%;
+}
+
+.cm-s-material {
+  height: 100%;
+}
+
+textarea {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: none;
+  outline: none;
+  resize: none;
+  background-color: inherit;
+  color: inherit;
+}
