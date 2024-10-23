@@ -1,9 +1,8 @@
-
 // client/src/App.js
 
 import React, { useState, useEffect, useCallback } from 'react';
 import io from 'socket.io-client';
-import { Box, AppBar, Toolbar as MuiToolbar, Typography, IconButton, Switch } from '@mui/material';
+import { Box, AppBar, Toolbar as MuiToolbar, Typography, IconButton, Switch, CssBaseline } from '@mui/material';
 import { Brightness4, Brightness7 } from '@mui/icons-material';
 import Editor from './components/Editor';
 import Preview from './components/Preview';
@@ -11,6 +10,7 @@ import { renderMarkdown } from './markdownRenderer';
 import debounce from 'lodash.debounce';
 import './App.css';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import Footer from './components/Footer';
 
 const socket = io('http://localhost:5005');
 
@@ -19,7 +19,8 @@ function App() {
   const [htmlContent, setHtmlContent] = useState('');
   const [darkMode, setDarkMode] = useState(false);
 
- 
+  // Apply formatting is now handled inside Editor.js, so remove it from App.js
+
   // Debounced function to emit markdown changes
   const emitMarkdown = useCallback(
     debounce((text) => {
@@ -86,7 +87,8 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ flexGrow: 1 }}>
+      <CssBaseline /> {/* Normalize CSS across browsers */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
         {/* AppBar */}
         <AppBar position="static">
           <MuiToolbar>
@@ -101,22 +103,50 @@ function App() {
         </AppBar>
 
         {/* Editor and Preview */}
-        <Box sx={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
+        <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
           {/* Editor */}
-          <Box sx={{ width: '50%', borderRight: '1px solid #ddd' }}>
-            <Editor markdown={markdown} setMarkdown={setMarkdown}   />
+          <Box
+            sx={{
+              width: { xs: '100%', md: '50%' }, // Responsive width
+              borderRight: { md: '1px solid #ddd' },
+              height: 'calc(100vh - 64px - 200px)', // Total height minus AppBar (64px) and 200px
+              maxHeight: 'calc(100vh - 64px - 200px)',
+              overflow: 'auto', // Enable scrolling when content overflows
+            }}
+          >
+            <Editor markdown={markdown} setMarkdown={setMarkdown} />
           </Box>
 
           {/* Preview */}
-          <Box sx={{ width: '50%' }}>
+          <Box
+            sx={{
+              width: { xs: '100%', md: '50%' }, // Responsive width
+              height: 'calc(100vh - 64px - 200px)', // Same height as editor
+              maxHeight: 'calc(100vh - 64px - 200px)',
+              overflow: 'auto', // Enable scrolling
+            }}
+          >
             <Preview htmlContent={htmlContent} />
           </Box>
         </Box>
+
+        {/* Optional Footer or Additional Content (200px height) */}
+        <Box
+          sx={{
+            height: '200px',
+            backgroundColor: theme.palette.background.paper,
+            p: 2,
+            overflow: 'auto',
+          }}
+        >
+       
+    
+  <Footer />
+</Box>
+        
       </Box>
     </ThemeProvider>
   );
 }
 
 export default App;
-
-

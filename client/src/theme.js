@@ -1,17 +1,24 @@
-// client/src/theme.js
+// client/src/App.js
 
-import { createTheme } from '@mui/material/styles';
-
-export const getTheme = (mode) =>
-  createTheme({
-    palette: {
-      mode,
-      primary: {
-        main: mode === 'light' ? '#1976d2' : '#90caf9',
-      },
-      background: {
-        default: mode === 'light' ? '#fafafa' : '#121212',
-        paper: mode === 'light' ? '#fff' : '#1d1d1d',
-      },
-    },
-  });
+const theme = React.useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: darkMode ? 'dark' : 'light',
+          primary: {
+            main: darkMode ? '#90caf9' : '#1976d2',
+          },
+        },
+        components: {
+          MuiCssBaseline: {
+            styleOverrides: {
+              body: {
+                transition: 'background-color 0.3s, color 0.3s',
+              },
+            },
+          },
+        },
+      }),
+    [darkMode]
+  );
+  

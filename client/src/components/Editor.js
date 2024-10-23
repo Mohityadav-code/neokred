@@ -1,3 +1,5 @@
+// client/src/components/Editor.js
+
 import React, { useRef } from 'react';
 import { Box } from '@mui/material';
 import CodeMirror from '@uiw/react-codemirror';
@@ -44,17 +46,20 @@ const Editor = ({ markdown, setMarkdown }) => {
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Toolbar applyFormatting={applyFormatting} />
-      <CodeMirror
-        value={markdown}
-        theme={oneDark}
-        onCreateEditor={(editor) => {
-          editorRef.current = editor;
-        }}
-        onChange={(value) => {
-          setMarkdown(value);
-        }}
-        height="100%"
-      />
+      <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+        <CodeMirror
+          value={markdown}
+
+          theme={oneDark}
+          onCreateEditor={(editor) => {
+            editorRef.current = editor;
+          }}
+          onChange={(value) => {
+            setMarkdown(value);
+          }}
+          height="100%" // Ensures CodeMirror occupies the full height of its container
+        />
+      </Box>
     </Box>
   );
 };
