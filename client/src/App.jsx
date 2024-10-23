@@ -23,7 +23,7 @@ import "./App.css";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Footer from "./components/Footer";
 
-const socket = io("http://localhost:5005");
+const socket = io("https://verbose-fishstick-w4xvpjr4j96h594j-5005.app.github.dev");
 
 function App() {
   const [markdown, setMarkdown] = useState("");
@@ -46,7 +46,7 @@ function App() {
      
       const renderMarkdownViaHTTP = async () => {
         try {
-          const response = await fetch("http://localhost:5005/render", {
+          const response = await fetch("https://verbose-fishstick-w4xvpjr4j96h594j-5005.app.github.dev/render", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -110,7 +110,7 @@ function App() {
      
       const renderMarkdownViaHTTP = async () => {
         try {
-          const response = await fetch("http://localhost:5005/render", {
+          const response = await fetch("https://verbose-fishstick-w4xvpjr4j96h594j-5005.app.github.dev/render", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
