@@ -79,7 +79,7 @@ function App() {
         palette: {
           mode: darkMode ? "dark" : "light",
           primary: {
-            main: darkMode ? "#90caf9" : "#1976d2",
+            main: darkMode ? "#FFF8F1" : "#FFD3C7",
           },
         },
       }),
@@ -101,14 +101,36 @@ function App() {
           height: "100vh",
         }}
       >
-        {/* AppBar */}
-        <AppBar position="static">
-          <MuiToolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 ,
-              fontSize:{xs: '1rem', sm: '1.5rem', md: '2rem', lg: '2.5rem', xl: '3rem'}
-            }}>
+        <MuiToolbar
+          sx={{
+            height: "50px",
+            backgroundColor: darkMode ? "#333" : "#FFF8F1",
+            borderBottom: "1px solid #ccc",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            width: "100vw",
+          }}
+        >
+          <Box>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                flexGrow: 1,
+                fontSize: {
+                  xs: "1rem",
+                  sm: "1.5rem",
+                  md: "2rem",
+                  lg: "2rem",
+                  xl: "2rem",
+                },
+              }}
+            >
               Real-time Markdown Editor
             </Typography>
+          </Box>
+          <Box>
             <IconButton
               sx={{ ml: 1 }}
               onClick={handleThemeChange}
@@ -121,8 +143,8 @@ function App() {
               onChange={handleThemeChange}
               color="default"
             />
-          </MuiToolbar>
-        </AppBar>
+          </Box>
+        </MuiToolbar>
 
         {/* Editor and Preview */}
         <Box
