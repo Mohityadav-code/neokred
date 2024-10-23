@@ -104,7 +104,9 @@ function App() {
         {/* AppBar */}
         <AppBar position="static">
           <MuiToolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 ,
+              fontSize:{xs: '1rem', sm: '1.5rem', md: '2rem', lg: '2.5rem', xl: '3rem'}
+            }}>
               Real-time Markdown Editor
             </Typography>
             <IconButton
