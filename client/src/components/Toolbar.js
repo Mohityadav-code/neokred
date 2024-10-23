@@ -1,4 +1,3 @@
-// client/src/components/Toolbar.js
 
 import React from 'react';
 import { Tooltip, IconButton, Box } from '@mui/material';
@@ -22,8 +21,8 @@ const Toolbar = ({ applyFormatting }) => {
         borderBottom: '1px solid #ccc',
         padding: '5px',
         backgroundColor: 'background.paper',
-        flexWrap: 'wrap', // Allow wrapping on small screens
-        gap: 1, // Add spacing between buttons
+        flexWrap: 'wrap',
+        gap: 1,
       }}
     >
       <Tooltip title="Bold">
@@ -37,7 +36,7 @@ const Toolbar = ({ applyFormatting }) => {
       </Tooltip>
       <Tooltip title="Italic">
         <IconButton
-          onClick={() => applyFormatting('_', '_', 'italic here')}
+          onClick={() => applyFormatting('_', '_', 'italic_here')}
           size="small"
           aria-label="italic"
         >
@@ -55,7 +54,7 @@ const Toolbar = ({ applyFormatting }) => {
       </Tooltip>
       <Tooltip title="Code">
         <IconButton
-          onClick={() => applyFormatting('`', '`', 'code here')}
+          onClick={() => applyFormatting('`', '`', 'code_here')}
           size="small"
           aria-label="code"
         >
@@ -64,7 +63,7 @@ const Toolbar = ({ applyFormatting }) => {
       </Tooltip>
       <Tooltip title="Link">
         <IconButton
-          onClick={() => applyFormatting('[', '](url)', 'link text')}
+          onClick={() => applyFormatting('[', '](url)', 'link_text')}
           size="small"
           aria-label="link"
         >
@@ -73,7 +72,7 @@ const Toolbar = ({ applyFormatting }) => {
       </Tooltip>
       <Tooltip title="Unordered List">
         <IconButton
-          onClick={() => applyFormatting('- ', '', 'list item')}
+          onClick={() => applyFormatting('- ', '', 'list_item')}
           size="small"
           aria-label="unordered list"
         >
@@ -82,7 +81,7 @@ const Toolbar = ({ applyFormatting }) => {
       </Tooltip>
       <Tooltip title="Ordered List">
         <IconButton
-          onClick={() => applyFormatting('1. ', '', 'list item')}
+          onClick={() => applyFormatting('1. ', '', 'list_item')}
           size="small"
           aria-label="ordered list"
         >
@@ -107,7 +106,6 @@ const Toolbar = ({ applyFormatting }) => {
           <TitleIcon fontSize="small" />
         </IconButton>
       </Tooltip>
-      {/* Add more buttons as needed */}
     </Box>
   );
 };

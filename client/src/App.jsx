@@ -1,6 +1,5 @@
-// client/src/App.js
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import io from "socket.io-client";
 import {
   Box,
@@ -10,6 +9,10 @@ import {
   IconButton,
   Switch,
   CssBaseline,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
 import Editor from "./components/Editor";
@@ -26,53 +29,106 @@ function App() {
   const [markdown, setMarkdown] = useState("");
   const [htmlContent, setHtmlContent] = useState("");
   const [darkMode, setDarkMode] = useState(false);
+  const [renderMode, setRenderMode] = useState("WebSocket");
 
-  // Debounced function to emit markdown changes
-  const emitMarkdown = useCallback(
-    debounce((text) => {
-      socket.emit("markdown_change", text);
-    }, 0),
-    []
-  );
-
-  // Handle markdown changes
+ 
   useEffect(() => {
-    emitMarkdown(markdown);
-    // Update local storage
+   
     localStorage.setItem("markdown", markdown);
-  }, [markdown, emitMarkdown]);
 
-  // Listen for HTML updates from the server
+    if (renderMode === "WebSocket") {
+     
+      const emitMarkdown = debounce((text) => {
+        socket.emit("markdown_change", text);
+      }, 0);
+      emitMarkdown(markdown);
+    } else if (renderMode === "HTTP") {
+     
+      const renderMarkdownViaHTTP = async () => {
+        try {
+          const response = await fetch("http://localhost:5005/render", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ markdown }),
+          });
+          const data = await response.json();
+          setHtmlContent(data.html);
+        } catch (error) {
+          console.error("Error rendering markdown via HTTP:", error);
+        }
+      };
+      renderMarkdownViaHTTP();
+    } else if (renderMode === "Client") {
+     
+      const renderedHTML = renderMarkdown(markdown);
+      setHtmlContent(renderedHTML);
+    }
+  }, [markdown, renderMode]);
+
+ 
   useEffect(() => {
-    socket.on("html_update", (html) => {
-      setHtmlContent(html);
-    });
+    const handleHtmlUpdate = (html) => {
+      if (renderMode === "WebSocket") {
+        setHtmlContent(html);
+      }
+    };
 
-    // Handle connection errors
+    socket.on("html_update", handleHtmlUpdate);
+
+   
     socket.on("connect_error", () => {
-      alert("Connection failed. Please check your network.");
+      if (renderMode === "WebSocket") {
+        alert("Connection failed. Please check your network.");
+      }
     });
 
     socket.on("disconnect", () => {
-      alert("Disconnected from server.");
+      if (renderMode === "WebSocket") {
+        alert("Disconnected from server.");
+      }
     });
 
-    // Cleanup on unmount
+   
     return () => {
-      socket.off("html_update");
+      socket.off("html_update", handleHtmlUpdate);
       socket.off("connect_error");
       socket.off("disconnect");
     };
-  }, []);
+  }, [renderMode]);
 
-  // Initial load from local storage
+ 
   useEffect(() => {
     const savedMarkdown = localStorage.getItem("markdown") || "";
     setMarkdown(savedMarkdown);
-    setHtmlContent(renderMarkdown(savedMarkdown));
-  }, []);
+   
+    if (renderMode === "Client") {
+      const renderedHTML = renderMarkdown(savedMarkdown);
+      setHtmlContent(renderedHTML);
+    } else if (renderMode === "HTTP") {
+     
+      const renderMarkdownViaHTTP = async () => {
+        try {
+          const response = await fetch("http://localhost:5005/render", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ markdown: savedMarkdown }),
+          });
+          const data = await response.json();
+          setHtmlContent(data.html);
+        } catch (error) {
+          console.error("Error rendering markdown via HTTP:", error);
+        }
+      };
+      renderMarkdownViaHTTP();
+    }
+   
+  }, [renderMode]);
 
-  // Theme configuration
+ 
   const theme = React.useMemo(
     () =>
       createTheme({
@@ -86,14 +142,14 @@ function App() {
     [darkMode]
   );
 
-  // Toggle theme
+ 
   const handleThemeChange = () => {
     setDarkMode(!darkMode);
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline /> {/* Normalize CSS across browsers */}
+      <CssBaseline />  
       <Box
         sx={{
           display: "flex",
@@ -130,7 +186,25 @@ function App() {
               Real-time Markdown Editor
             </Typography>
           </Box>
-          <Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            {/* Render Mode Dropdown */}
+            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+              <InputLabel id="render-mode-label" sx={{
+                color: darkMode ? "#FFF8F1" : "#333",
+              }}>Render Mode</InputLabel>
+              <Select
+                labelId="render-mode-label"
+                id="render-mode-select"
+                value={renderMode}
+                onChange={(e) => setRenderMode(e.target.value)}
+                label="Render Mode"
+              >
+                <MenuItem value={"WebSocket"}>WebSocket Rendering</MenuItem>
+                <MenuItem value={"HTTP"}>HTTP Request Rendering</MenuItem>
+                <MenuItem value={"Client"}>Client-side Rendering</MenuItem>
+              </Select>
+            </FormControl>
+            {/* Theme Toggle */}
             <IconButton
               sx={{ ml: 1 }}
               onClick={handleThemeChange}
@@ -138,11 +212,7 @@ function App() {
             >
               {darkMode ? <Brightness7 /> : <Brightness4 />}
             </IconButton>
-            <Switch
-              checked={darkMode}
-              onChange={handleThemeChange}
-              color="default"
-            />
+           
           </Box>
         </MuiToolbar>
 
@@ -150,20 +220,20 @@ function App() {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", md: "row" }, // Responsive flex direction
+            flexDirection: { xs: "column", md: "row" },
             flexGrow: 1,
-            overflow: "hidden", // Prevent parent from scrolling
+            overflow: "hidden",
           }}
         >
           {/* Editor */}
           <Box
             sx={{
-              width: { xs: "100%", md: "50%" }, // Full width on mobile, half on desktop
-              height: { xs: "50%", md: "auto" }, // Half height on mobile
-              borderRight: { md: "1px solid #ddd" }, // Border only on desktop
-              borderBottom: { xs: "1px solid #ddd", md: "none" }, // Border bottom on mobile
+              width: { xs: "100%", md: "50%" },
+              height: { xs: "50%", md: "auto" },
+              borderRight: { md: "1px solid #ddd" },
+              borderBottom: { xs: "1px solid #ddd", md: "none" },
               boxSizing: "border-box",
-              overflow: "auto", // Enable scrolling when content overflows
+              overflow: "auto",
             }}
           >
             <Editor
@@ -176,9 +246,9 @@ function App() {
           {/* Preview */}
           <Box
             sx={{
-              width: { xs: "100%", md: "50%" }, // Full width on mobile, half on desktop
-              height: { xs: "50%", md: "auto" }, // Half height on mobile
-              overflow: "auto", // Enable scrolling
+              width: { xs: "100%", md: "50%" },
+              height: { xs: "50%", md: "auto" },
+              overflow: "auto",
               boxSizing: "border-box",
             }}
           >

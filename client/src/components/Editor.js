@@ -1,21 +1,20 @@
-// client/src/components/Editor.js
 
 import React, { useRef } from "react";
 import { Box } from "@mui/material";
 import CodeMirror from "@uiw/react-codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { githubLight } from "@uiw/codemirror-theme-github"; // Import a light theme
+import { githubLight } from "@uiw/codemirror-theme-github";
 
 import Toolbar from "./Toolbar";
 
 const Editor = ({ markdownData, setMarkdown, darkMode }) => {
   const editorRef = useRef(null);
 
-  // Determine the CodeMirror theme based on darkMode prop
+
   const codeMirrorTheme = darkMode ? oneDark : githubLight;
 
-  // Apply formatting from toolbar
+
   const applyFormatting = (prefix, suffix, sampleText = "") => {
     const editor = editorRef.current;
     if (!editor) return;
@@ -30,11 +29,11 @@ const Editor = ({ markdownData, setMarkdown, darkMode }) => {
     let newCursorPos = from + prefix.length;
 
     if (from === to) {
-      // No text selected, insert sample text
+    
       insertText = prefix + sampleText + suffix;
       newCursorPos += sampleText.length;
     } else {
-      // Text is selected, apply formatting
+    
       insertText = prefix + selectedText + suffix;
       newCursorPos = to + prefix.length + suffix.length;
     }
@@ -44,7 +43,7 @@ const Editor = ({ markdownData, setMarkdown, darkMode }) => {
       selection: { anchor: newCursorPos },
     });
 
-    // Update the markdown state
+
     setMarkdown(editor.state.doc.toString());
   };
 
@@ -54,19 +53,19 @@ const Editor = ({ markdownData, setMarkdown, darkMode }) => {
       <Box sx={{ flexGrow: 1, overflow: "auto" }}>
         <CodeMirror
           value={markdownData}
-          extensions={[markdown()]} // Enable Markdown syntax highlighting
-          theme={codeMirrorTheme} // Apply the selected theme
+          extensions={[markdown()]}
+          theme={codeMirrorTheme}
           onCreateEditor={(editor) => {
             editorRef.current = editor;
           }}
           onChange={(value) => {
             setMarkdown(value);
           }}
-          height="100%" // Ensures CodeMirror occupies the full height of its container
+          height="100%"
           style={{
-            // Optionally adjust additional styles based on darkMode
-            backgroundColor: darkMode ? "#282c34" : "#f5f5f5", // Example light background
-            color: darkMode ? "#ffffff" : "#000000", // Ensure text color contrasts with background
+        
+            backgroundColor: darkMode ? "#282c34" : "#f5f5f5",
+            color: darkMode ? "#ffffff" : "#000000",
           }}
         />
       </Box>
