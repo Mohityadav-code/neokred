@@ -19,17 +19,7 @@ function App() {
   const [htmlContent, setHtmlContent] = useState('');
   const [darkMode, setDarkMode] = useState(false);
 
-  // Apply formatting from toolbar
-  const applyFormatting = (prefix, suffix) => {
-    const textarea = document.querySelector('.CodeMirror textarea');
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = markdown.slice(start, end);
-    const newText = markdown.slice(0, start) + prefix + selectedText + suffix + markdown.slice(end);
-    setMarkdown(newText);
-  };
-
+ 
   // Debounced function to emit markdown changes
   const emitMarkdown = useCallback(
     debounce((text) => {
@@ -114,7 +104,7 @@ function App() {
         <Box sx={{ display: 'flex', height: 'calc(100vh - 64px)' }}>
           {/* Editor */}
           <Box sx={{ width: '50%', borderRight: '1px solid #ddd' }}>
-            <Editor markdown={markdown} setMarkdown={setMarkdown} applyFormatting={applyFormatting} />
+            <Editor markdown={markdown} setMarkdown={setMarkdown}   />
           </Box>
 
           {/* Preview */}

@@ -1,35 +1,59 @@
-
-// client/src/components/Editor.js
-
-import React from 'react';
+import React, { useRef } from 'react';
 import { Box } from '@mui/material';
-import { Controlled as ControlledEditor } from 'react-codemirror2';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/mode/markdown/markdown';
-import 'codemirror/theme/material.css';
+import CodeMirror from '@uiw/react-codemirror';
+import { markdown } from '@codemirror/lang-markdown';
+import { oneDark } from '@codemirror/theme-one-dark';
 import Toolbar from './Toolbar';
 
- 
+const Editor = ({ markdown, setMarkdown }) => {
+  const editorRef = useRef(null);
 
-const Editor = ({ markdown, setMarkdown, applyFormatting }) => {
+  // Apply formatting from toolbar
+  const applyFormatting = (prefix, suffix, sampleText = '') => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const doc = editor.state.doc;
+    const selection = editor.state.selection.main;
+    const from = selection.from;
+    const to = selection.to;
+    const selectedText = doc.sliceString(from, to);
+
+    let insertText = '';
+    let newCursorPos = from + prefix.length;
+
+    if (from === to) {
+      // No text selected, insert sample text
+      insertText = prefix + sampleText + suffix;
+      newCursorPos += sampleText.length;
+    } else {
+      // Text is selected, apply formatting
+      insertText = prefix + selectedText + suffix;
+      newCursorPos = to + prefix.length + suffix.length;
+    }
+
+    editor.dispatch({
+      changes: { from, to, insert: insertText },
+      selection: { anchor: newCursorPos },
+    });
+
+    // Update the markdown state
+    setMarkdown(editor.state.doc.toString());
+  };
+
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <Toolbar applyFormatting={applyFormatting} />
-      <ControlledEditor
+      <CodeMirror
         value={markdown}
-        options={{
-          mode: 'markdown',
-          theme: 'material',
-          lineNumbers: true,
-          lineWrapping: true,
-          scrollbarStyle: null,
-          tabSize: 2,
+        theme={oneDark}
+        onCreateEditor={(editor) => {
+          editorRef.current = editor;
         }}
-        onBeforeChange={(editor, data, value) => {
+        onChange={(value) => {
           setMarkdown(value);
         }}
-        onChange={() => {}}
-        style={{ flexGrow: 1 }}
+        height="100%"
       />
     </Box>
   );
